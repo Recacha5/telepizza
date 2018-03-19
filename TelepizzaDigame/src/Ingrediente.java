@@ -9,5 +9,19 @@
  * @author Profesor
  */
 public class Ingrediente {
+    private String nombre;
+    private float precio;
+
+    public Ingrediente(String nombre) {
+        this.nombre= nombre;
+        precio =0;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+    
+    
     
 }
