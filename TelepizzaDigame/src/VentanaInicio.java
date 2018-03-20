@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -91,7 +92,7 @@ public class VentanaInicio extends javax.swing.JFrame {
         jComboBoxPizzas = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         jListIngredientes = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        jButtonAñadirAlPedido = new javax.swing.JButton();
         jSpinnerCantidad = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         jComboBoxTamaño = new javax.swing.JComboBox<>();
@@ -199,13 +200,18 @@ public class VentanaInicio extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jListIngredientes);
 
-        jButton1.setText("Añadir");
+        jButtonAñadirAlPedido.setText("Añadir");
+        jButtonAñadirAlPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAñadirAlPedidoActionPerformed(evt);
+            }
+        });
 
         jSpinnerCantidad.setValue(1);
 
         jLabel1.setText("Cantidad");
 
-        jComboBoxTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pequeña", "Mediana", "Familiar" }));
 
         jLabel2.setText("Ingredientes Extra");
 
@@ -216,18 +222,18 @@ public class VentanaInicio extends javax.swing.JFrame {
             .addGroup(jPanelPedidoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jComboBoxPizzas, 0, 145, Short.MAX_VALUE)
+                    .addComponent(jComboBoxPizzas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanelPedidoLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jComboBoxTamaño, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jComboBoxTamaño, 0, 145, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
                 .addGroup(jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(44, 44, 44)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButtonAñadirAlPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28))
         );
         jPanelPedidoLayout.setVerticalGroup(
@@ -235,7 +241,7 @@ public class VentanaInicio extends javax.swing.JFrame {
             .addGroup(jPanelPedidoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
+                    .addComponent(jButtonAñadirAlPedido)
                     .addGroup(jPanelPedidoLayout.createSequentialGroup()
                         .addComponent(jComboBoxPizzas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -275,6 +281,51 @@ public class VentanaInicio extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void actualizarPedido(){
+        modeloPedido.clear();
+        for (Pizza p:vPedido){
+            modeloPedido.addElement(p);
+        }
+    }
+    private void jButtonAñadirAlPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAñadirAlPedidoActionPerformed
+        // Añadir Pizza
+        String nombrePizza = (String)jComboBoxPizzas.getSelectedItem();
+        Pizza pizzaPedido = null;
+        int cantidad = (int) jSpinnerCantidad.getValue();
+        for (Pizza p: vPizzas){
+            if (p.getNombre().equalsIgnoreCase(nombrePizza)){
+                pizzaPedido = new Pizza(p);
+            }
+        }
+        //Configuro Tamaño e ingredientes
+        if (pizzaPedido!=null){
+            pizzaPedido.setTamanio(jComboBoxTamaño.getSelectedIndex());
+            //Inserto Ingredientes extra a la pizza
+            int[] vIng = jListIngredientes.getSelectedIndices();
+            if (vIng.length>0){
+                for (int i:vIng){
+                    pizzaPedido.anadirIngrediente(vIngredientes.get(i));
+                }
+            }
+            pizzaPedido.cularPrecio(); //Actualiza el precio de la pizza con los ingredientes extra
+            //En el vector inserto tantas pizzas como cantidad se seleccionen
+            while (cantidad>0){
+                vPedido.add(pizzaPedido);
+                cantidad--;
+            }
+            
+            actualizarPedido();
+            
+            //Limpio las selecciones 
+            jListIngredientes.clearSelection();
+            jComboBoxPizzas.setSelectedIndex(0);
+            jComboBoxTamaño.setSelectedIndex(0);
+            jSpinnerCantidad.setValue(1);
+        }else{
+            JOptionPane.showMessageDialog(null, "Pizza no seleccionada");
+        }
+    }//GEN-LAST:event_jButtonAñadirAlPedidoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,7 +368,7 @@ public class VentanaInicio extends javax.swing.JFrame {
     private DefaultListModel modeloIngredientes;
     private DefaultListModel modeloPedido;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonAñadirAlPedido;
     private javax.swing.JButton jButtonBorrar;
     private javax.swing.JButton jButtonFinalizarPedido;
     private javax.swing.JComboBox<String> jComboBoxPizzas;
