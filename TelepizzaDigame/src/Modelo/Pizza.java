@@ -1,3 +1,5 @@
+package Modelo;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,6 +25,13 @@ public class Pizza {
         this.nombre = p.nombre;
         this.tamanio = 0;
         this.precio = 0;
+        this.vIngredientes = new ArrayList<>();
+    }
+    
+    public Pizza(String nombre, float precio) {
+        this.nombre = nombre;
+        this.tamanio = 0;
+        this.precio = precio;
         this.vIngredientes = new ArrayList<>();
     }
 

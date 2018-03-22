@@ -1,4 +1,10 @@
+package Ventanas;
 
+
+import Modelo.Cliente;
+import Modelo.Pizza;
+import Modelo.Ingrediente;
+import BBDD.Conexion;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -20,43 +26,35 @@ public class VentanaInicio extends javax.swing.JFrame {
      */
     public VentanaInicio() {
         initComponents();
+        con = new Conexion();
         vClientes = new ArrayList<>();
-        vPizzas = new ArrayList<>();
         vPedido = new ArrayList<>();
         vIngredientes = new ArrayList<>();
         modeloIngredientes = new DefaultListModel();
         modeloPedido = new DefaultListModel();
         jListPedido.setModel(modeloPedido);
         jListIngredientes.setModel(modeloIngredientes);
-        cargarPizzas();
         cargarModelos();
     }
     
     
     
-    //Borrar al cargar los datos de las pizzas desde BBDD
-    private void cargarPizzas(){
-        vPizzas.add(new Pizza("Carbonara"));
-        vPizzas.add(new Pizza("Margarita"));
-        vPizzas.add(new Pizza("Mexicana"));
-        vIngredientes.add(new Ingrediente("Tomate"));
-        vIngredientes.add(new Ingrediente("Queso"));
-        vIngredientes.add(new Ingrediente("Cebolla"));
-        vClientes.add(new Cliente("Juan"));
-    }
-    
     private void cargarModelos(){
-        //Cargo los datos de las pizzzas
+        //Cargo los datos de las pizzzas con una llamada a la bbdd
         jComboBoxPizzas.removeAllItems();
         jComboBoxPizzas.addItem("Pizzas");
-        for (Pizza p:vPizzas){
+        ArrayList<String> aux = con.verDatosTabla("Nombre", "pizzas");
+        if (aux.size()>0)
+        for (String i: aux){
             
-            jComboBoxPizzas.addItem(p.getNombre());
+            jComboBoxPizzas.addItem(i);
         }
         
-        //Modelo Ingredientes
+        //Modelo Ingredientes con conexion a la bbdd
         modeloIngredientes.clear();
-        for (Ingrediente i: vIngredientes){
+        aux = con.verDatosTabla("nombre", "ingredientes");
+        if (aux.size()>0)
+        for (String i: aux){
             modeloIngredientes.addElement(i);
         }
         
@@ -291,13 +289,9 @@ public class VentanaInicio extends javax.swing.JFrame {
     private void jButtonAñadirAlPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAñadirAlPedidoActionPerformed
         // Añadir Pizza
         String nombrePizza = (String)jComboBoxPizzas.getSelectedItem();
-        Pizza pizzaPedido = null;
+        Pizza pizzaPedido = con.obtenerPizza(nombrePizza);
         int cantidad = (int) jSpinnerCantidad.getValue();
-        for (Pizza p: vPizzas){
-            if (p.getNombre().equalsIgnoreCase(nombrePizza)){
-                pizzaPedido = new Pizza(p);
-            }
-        }
+        
         //Configuro Tamaño e ingredientes
         if (pizzaPedido!=null){
             pizzaPedido.setTamanio(jComboBoxTamaño.getSelectedIndex());
@@ -305,7 +299,8 @@ public class VentanaInicio extends javax.swing.JFrame {
             int[] vIng = jListIngredientes.getSelectedIndices();
             if (vIng.length>0){
                 for (int i:vIng){
-                    pizzaPedido.anadirIngrediente(vIngredientes.get(i));
+                    //buscar el ingrediente por nombre en la bbdd
+                    pizzaPedido.anadirIngrediente(con.buscarIngrediente((String)modeloIngredientes.get(i)));
                 }
             }
             pizzaPedido.cularPrecio(); //Actualiza el precio de la pizza con los ingredientes extra
@@ -361,6 +356,7 @@ public class VentanaInicio extends javax.swing.JFrame {
             }
         });
     }
+    private BBDD.Conexion con;
     private ArrayList<Cliente> vClientes;
     private ArrayList<Pizza> vPizzas;
     private ArrayList<Pizza> vPedido;
