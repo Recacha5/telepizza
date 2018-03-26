@@ -5,6 +5,7 @@
  */
 package BBDD;
 
+import Modelo.Cliente;
 import Modelo.Ingrediente;
 import Modelo.Pizza;
 import com.mysql.jdbc.Connection;
@@ -120,6 +121,31 @@ public class Conexion {
         }
         
         return ingrediente;
+    }
+    
+    /**
+     * Busca un cliente por su telefono en la BBDD
+     * @param numero el número de teléfono por el que buscar
+     * @return un cliente si se encuentra en la bbdd o null si no se encuentra
+     */
+    public Cliente buscarClienteNombre(String numero){
+        Cliente cliente = null;
+          try {
+            conectar();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("Select * from clientes where telefono = '"+numero+"';");
+           
+            if (rs.next()){
+                cliente = new Cliente(rs.getString(1),rs.getString(2),rs.getString(3));
+            }
+               
+            
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return cliente;
     }
 
 }

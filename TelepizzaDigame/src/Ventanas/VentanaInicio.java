@@ -27,9 +27,9 @@ public class VentanaInicio extends javax.swing.JFrame {
     public VentanaInicio() {
         initComponents();
         con = new Conexion();
-        vClientes = new ArrayList<>();
+        //vClientes = new ArrayList<>();
         vPedido = new ArrayList<>();
-        vIngredientes = new ArrayList<>();
+        //vIngredientes = new ArrayList<>();
         modeloIngredientes = new DefaultListModel();
         modeloPedido = new DefaultListModel();
         jListPedido.setModel(modeloPedido);
@@ -97,6 +97,8 @@ public class VentanaInicio extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(700, 500));
+        setResizable(false);
 
         jPanelCliente.setBorder(javax.swing.BorderFactory.createTitledBorder("Cliente"));
 
@@ -105,6 +107,12 @@ public class VentanaInicio extends javax.swing.JFrame {
         jLabelTelefono.setText("Telefono");
 
         jLabelDirección.setText("Dirección");
+
+        jTextFieldTelefono.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldTelefonoFocusLost(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Pedido"));
 
@@ -322,6 +330,17 @@ public class VentanaInicio extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonAñadirAlPedidoActionPerformed
 
+    private void jTextFieldTelefonoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldTelefonoFocusLost
+        String telf = jTextFieldTelefono.getText();
+        if (!telf.equalsIgnoreCase("")){
+            cliente = con.buscarClienteNombre(telf);
+            if (cliente != null){
+                jTextFieldNombre.setText(cliente.getNombre());
+                jTextFieldDireccion.setText(cliente.getDireccion());
+            }
+        }
+    }//GEN-LAST:event_jTextFieldTelefonoFocusLost
+
     /**
      * @param args the command line arguments
      */
@@ -357,10 +376,11 @@ public class VentanaInicio extends javax.swing.JFrame {
         });
     }
     private BBDD.Conexion con;
-    private ArrayList<Cliente> vClientes;
-    private ArrayList<Pizza> vPizzas;
+    private Cliente cliente;
+    //private ArrayList<Cliente> vClientes;
+    //private ArrayList<Pizza> vPizzas;
     private ArrayList<Pizza> vPedido;
-    private ArrayList<Ingrediente> vIngredientes;
+   // private ArrayList<Ingrediente> vIngredientes;
     private DefaultListModel modeloIngredientes;
     private DefaultListModel modeloPedido;
     // Variables declaration - do not modify//GEN-BEGIN:variables
