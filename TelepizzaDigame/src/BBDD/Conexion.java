@@ -6,6 +6,7 @@
 package BBDD;
 
 import Modelo.Cliente;
+import Modelo.Factura;
 import Modelo.Ingrediente;
 import Modelo.Pizza;
 import com.mysql.jdbc.Connection;
@@ -43,7 +44,7 @@ public class Conexion {
     private void conectar() {
         try {
             con = (Connection) DriverManager.getConnection(url, usuario, pass);
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -60,19 +61,20 @@ public class Conexion {
 
     /**
      * Consulta datos de una columna de una tabla
+     *
      * @param tabla la tabla a consultar
      * @param columna el nombre de la columna a consultar
      * @return ArrayList con los datos obtenidos, null si no hay datos
      */
     public ArrayList<String> verDatosTabla(String columna, String tabla) {
         ArrayList<String> vDatos = new ArrayList<>();
-        
+
         try {
             conectar();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("Select "+columna+" from "+tabla+";");
-           // ResultSet rs = st.executeQuery("Select * from pizzas;");
-            while (rs.next()){
+            ResultSet rs = st.executeQuery("Select " + columna + " from " + tabla + ";");
+            // ResultSet rs = st.executeQuery("Select * from pizza;");
+            while (rs.next()) {
                 vDatos.add(rs.getString(1));
             }
 
@@ -82,70 +84,76 @@ public class Conexion {
         return vDatos;
     }
 
-   
-    public Pizza obtenerPizza(String nombre){
+    public Pizza obtenerPizza(String nombre) {
         Pizza pizza = null;
         try {
             conectar();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("Select * from pizzas where nombre = '"+nombre+"';");
-           
-            if (rs.next()){
-                pizza = new Pizza(rs.getString(1),rs.getFloat(4));
+            ResultSet rs = st.executeQuery("Select * from pizza where nombre = '" + nombre + "';");
+
+            if (rs.next()) {
+                pizza = new Pizza(rs.getString(2), rs.getFloat(3));
             }
-               
-            
 
         } catch (SQLException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return pizza;
     }
-    
-    public Ingrediente buscarIngrediente(String nombre){
+
+    public Ingrediente buscarIngrediente(String nombre) {
         Ingrediente ingrediente = null;
         try {
             conectar();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("Select * from ingredientes where nombre = '"+nombre+"';");
-           
-            if (rs.next()){
-                ingrediente = new Ingrediente(rs.getString(2),rs.getFloat(3));
+            ResultSet rs = st.executeQuery("Select * from ingrediente where nombre = '" + nombre + "';");
+
+            if (rs.next()) {
+                ingrediente = new Ingrediente(rs.getString(2), rs.getFloat(3));
             }
-               
-            
 
         } catch (SQLException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return ingrediente;
     }
-    
+
     /**
      * Busca un cliente por su telefono en la BBDD
+     *
      * @param numero el número de teléfono por el que buscar
      * @return un cliente si se encuentra en la bbdd o null si no se encuentra
      */
-    public Cliente buscarClienteNombre(String numero){
+    public Cliente buscarClienteNombre(String numero) {
         Cliente cliente = null;
-          try {
+        try {
             conectar();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("Select * from clientes where telefono = '"+numero+"';");
-           
-            if (rs.next()){
-                cliente = new Cliente(rs.getString(1),rs.getString(2),rs.getString(3));
+            ResultSet rs = st.executeQuery("Select * from cliente where telefono = '" + numero + "';");
+
+            if (rs.next()) {
+                cliente = new Cliente(rs.getString(2), rs.getString(3), rs.getString(4));
             }
-               
-            
 
         } catch (SQLException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return cliente;
     }
 
+    public void crearFactura(Factura factura) {
+
+        try {
+            conectar();
+            Statement st = con.createStatement();
+            st.executeUpdate("INSERT INTO telepizza.factura  VALUES ("+ factura.getId_cliente() + ", '" + factura.getPedido() + "', "+factura.getTotal()+");");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 }

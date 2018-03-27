@@ -1,11 +1,12 @@
 package Ventanas;
 
-
 import Modelo.Cliente;
 import Modelo.Pizza;
 import Modelo.Ingrediente;
 import BBDD.Conexion;
+import Modelo.Factura;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -14,7 +15,6 @@ import javax.swing.JOptionPane;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Profesor
@@ -35,33 +35,33 @@ public class VentanaInicio extends javax.swing.JFrame {
         jListPedido.setModel(modeloPedido);
         jListIngredientes.setModel(modeloIngredientes);
         cargarModelos();
+        this.setLocationRelativeTo(null);
     }
-    
-    
-    
-    private void cargarModelos(){
-        //Cargo los datos de las pizzzas con una llamada a la bbdd
+
+    private void cargarModelos() {
+        //Cargo los datos de las pizzas con una llamada a la bbdd
         jComboBoxPizzas.removeAllItems();
         jComboBoxPizzas.addItem("Pizzas");
-        ArrayList<String> aux = con.verDatosTabla("Nombre", "pizzas");
-        if (aux.size()>0)
-        for (String i: aux){
-            
-            jComboBoxPizzas.addItem(i);
+        ArrayList<String> aux = con.verDatosTabla("Nombre", "pizza");
+        if (aux.size() > 0) {
+            for (String i : aux) {
+
+                jComboBoxPizzas.addItem(i);
+            }
         }
-        
+
         //Modelo Ingredientes con conexion a la bbdd
         modeloIngredientes.clear();
-        aux = con.verDatosTabla("nombre", "ingredientes");
-        if (aux.size()>0)
-        for (String i: aux){
-            modeloIngredientes.addElement(i);
+        aux = con.verDatosTabla("nombre", "ingrediente");
+        if (aux.size() > 0) {
+            for (String i : aux) {
+                modeloIngredientes.addElement(i);
+            }
         }
-        
+
         //Inicio Pedido
         modeloPedido.clear();
-            
-        
+
     }
 
     /**
@@ -90,14 +90,14 @@ public class VentanaInicio extends javax.swing.JFrame {
         jComboBoxPizzas = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         jListIngredientes = new javax.swing.JList<>();
-        jButtonAñadirAlPedido = new javax.swing.JButton();
         jSpinnerCantidad = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         jComboBoxTamaño = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
+        jComboBoxMasa = new javax.swing.JComboBox<>();
+        jButtonAñadirAlPedido = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(700, 500));
         setResizable(false);
 
         jPanelCliente.setBorder(javax.swing.BorderFactory.createTitledBorder("Cliente"));
@@ -114,6 +114,12 @@ public class VentanaInicio extends javax.swing.JFrame {
             }
         });
 
+        jTextFieldNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldNombreFocusLost(evt);
+            }
+        });
+
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Pedido"));
 
         jListPedido.setModel(new javax.swing.AbstractListModel<String>() {
@@ -124,8 +130,18 @@ public class VentanaInicio extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jListPedido);
 
         jButtonBorrar.setText("Borrar");
+        jButtonBorrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonBorrarMouseClicked(evt);
+            }
+        });
 
         jButtonFinalizarPedido.setText("Finalizar");
+        jButtonFinalizarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFinalizarPedidoActionPerformed(evt);
+            }
+        });
 
         jRadioButtonDomicilio.setText("Envio Domicilio");
 
@@ -154,7 +170,7 @@ public class VentanaInicio extends javax.swing.JFrame {
                         .addComponent(jRadioButtonDomicilio)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonFinalizarPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanelClienteLayout = new javax.swing.GroupLayout(jPanelCliente);
@@ -181,12 +197,12 @@ public class VentanaInicio extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelClienteLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextFieldTelefono)
-                    .addComponent(jLabelTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                    .addComponent(jTextFieldTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(jLabelTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabelDirección, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addComponent(jTextFieldDireccion))
+                    .addComponent(jLabelDirección, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldDireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -206,13 +222,6 @@ public class VentanaInicio extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jListIngredientes);
 
-        jButtonAñadirAlPedido.setText("Añadir");
-        jButtonAñadirAlPedido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAñadirAlPedidoActionPerformed(evt);
-            }
-        });
-
         jSpinnerCantidad.setValue(1);
 
         jLabel1.setText("Cantidad");
@@ -220,6 +229,15 @@ public class VentanaInicio extends javax.swing.JFrame {
         jComboBoxTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pequeña", "Mediana", "Familiar" }));
 
         jLabel2.setText("Ingredientes Extra");
+
+        jComboBoxMasa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Fina", "Clasica" }));
+
+        jButtonAñadirAlPedido.setText("Añadir");
+        jButtonAñadirAlPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAñadirAlPedidoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelPedidoLayout = new javax.swing.GroupLayout(jPanelPedido);
         jPanelPedido.setLayout(jPanelPedidoLayout);
@@ -233,21 +251,26 @@ public class VentanaInicio extends javax.swing.JFrame {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jComboBoxTamaño, 0, 145, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                    .addComponent(jComboBoxTamaño, 0, 145, Short.MAX_VALUE)
+                    .addComponent(jComboBoxMasa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(68, 68, 68)
                 .addGroup(jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(44, 44, 44)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(jButtonAñadirAlPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelPedidoLayout.setVerticalGroup(
             jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelPedidoLayout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(jPanelPedidoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelPedidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonAñadirAlPedido)
                     .addGroup(jPanelPedidoLayout.createSequentialGroup()
                         .addComponent(jComboBoxPizzas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -255,13 +278,11 @@ public class VentanaInicio extends javax.swing.JFrame {
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(27, 27, 27)
-                        .addComponent(jComboBoxTamaño, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jComboBoxTamaño, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxMasa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButtonAñadirAlPedido))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelPedidoLayout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -270,10 +291,13 @@ public class VentanaInicio extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jPanelPedido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanelCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(jPanelPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 59, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -288,58 +312,96 @@ public class VentanaInicio extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void actualizarPedido(){
+    private void actualizarPedido() {
+        float precio = 0;
         modeloPedido.clear();
-        for (Pizza p:vPedido){
-            modeloPedido.addElement(p);
+        if (jRadioButtonDomicilio.isSelected()) {
+            for (Pizza p : vPedido) {
+                precio = 3 + p.getPrecio();
+                p.setPrecio(precio);
+                modeloPedido.addElement(p);
+            }
+        } else {
+            for (Pizza p : vPedido) {
+                modeloPedido.addElement(p);
+            }
         }
+
     }
     private void jButtonAñadirAlPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAñadirAlPedidoActionPerformed
         // Añadir Pizza
-        String nombrePizza = (String)jComboBoxPizzas.getSelectedItem();
+        String nombrePizza = (String) jComboBoxPizzas.getSelectedItem();
         Pizza pizzaPedido = con.obtenerPizza(nombrePizza);
         int cantidad = (int) jSpinnerCantidad.getValue();
-        
+
         //Configuro Tamaño e ingredientes
-        if (pizzaPedido!=null){
+        if (pizzaPedido != null) {
             pizzaPedido.setTamanio(jComboBoxTamaño.getSelectedIndex());
+            pizzaPedido.setMasa(jComboBoxMasa.getSelectedIndex());
             //Inserto Ingredientes extra a la pizza
             int[] vIng = jListIngredientes.getSelectedIndices();
-            if (vIng.length>0){
-                for (int i:vIng){
+            if (vIng.length > 0) {
+                for (int i : vIng) {
                     //buscar el ingrediente por nombre en la bbdd
-                    pizzaPedido.anadirIngrediente(con.buscarIngrediente((String)modeloIngredientes.get(i)));
+                    pizzaPedido.anadirIngrediente(con.buscarIngrediente((String) modeloIngredientes.get(i)));
+
                 }
             }
             pizzaPedido.cularPrecio(); //Actualiza el precio de la pizza con los ingredientes extra
             //En el vector inserto tantas pizzas como cantidad se seleccionen
-            while (cantidad>0){
+            while (cantidad > 0) {
                 vPedido.add(pizzaPedido);
                 cantidad--;
             }
-            
+
             actualizarPedido();
-            
+
             //Limpio las selecciones 
             jListIngredientes.clearSelection();
             jComboBoxPizzas.setSelectedIndex(0);
             jComboBoxTamaño.setSelectedIndex(0);
             jSpinnerCantidad.setValue(1);
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Pizza no seleccionada");
         }
     }//GEN-LAST:event_jButtonAñadirAlPedidoActionPerformed
 
     private void jTextFieldTelefonoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldTelefonoFocusLost
         String telf = jTextFieldTelefono.getText();
-        if (!telf.equalsIgnoreCase("")){
+        if (!telf.equalsIgnoreCase("")) {
             cliente = con.buscarClienteNombre(telf);
-            if (cliente != null){
+            if (cliente != null) {
                 jTextFieldNombre.setText(cliente.getNombre());
                 jTextFieldDireccion.setText(cliente.getDireccion());
             }
         }
     }//GEN-LAST:event_jTextFieldTelefonoFocusLost
+
+    private void jButtonFinalizarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFinalizarPedidoActionPerformed
+        if (vPedido.size() > 0) {
+            float total = 0;
+            for (int i = 0; i < vPedido.size(); i++) {
+                total += vPedido.get(i).getPrecio();
+            }
+
+            Factura factura = new Factura(Integer.parseInt(cliente.getTelefono()), vPedido, total);
+            con.crearFactura(factura);
+            JOptionPane.showMessageDialog(this, "Tu pedido se ha generado correctamente");
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Comienza el pedido, por favor");
+        }
+
+    }//GEN-LAST:event_jButtonFinalizarPedidoActionPerformed
+
+    private void jButtonBorrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonBorrarMouseClicked
+        vPedido.remove(jListPedido.getSelectedIndex());
+        actualizarPedido();
+    }//GEN-LAST:event_jButtonBorrarMouseClicked
+
+    private void jTextFieldNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldNombreFocusLost
+     
+    }//GEN-LAST:event_jTextFieldNombreFocusLost
 
     /**
      * @param args the command line arguments
@@ -380,13 +442,14 @@ public class VentanaInicio extends javax.swing.JFrame {
     //private ArrayList<Cliente> vClientes;
     //private ArrayList<Pizza> vPizzas;
     private ArrayList<Pizza> vPedido;
-   // private ArrayList<Ingrediente> vIngredientes;
+    // private ArrayList<Ingrediente> vIngredientes;
     private DefaultListModel modeloIngredientes;
     private DefaultListModel modeloPedido;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAñadirAlPedido;
     private javax.swing.JButton jButtonBorrar;
     private javax.swing.JButton jButtonFinalizarPedido;
+    private javax.swing.JComboBox<String> jComboBoxMasa;
     private javax.swing.JComboBox<String> jComboBoxPizzas;
     private javax.swing.JComboBox<String> jComboBoxTamaño;
     private javax.swing.JLabel jLabel1;
